@@ -16,22 +16,17 @@
 
 package org.apache.cordova.contacts;
 
-import java.util.HashMap;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.LOG;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 /**
  * This abstract class defines SDK-independent API for communication with
- * Contacts Provider. The actual implementation used by the application depends
- * on the level of API available on the device. If the API level is Cupcake or
- * Donut, we want to use the {@link ContactAccessorSdk3_4} class. If it is
- * Eclair or higher, we want to use {@link ContactAccessorSdk5}.
+ * Contacts Provider.
  */
 public abstract class ContactAccessor {
 
@@ -52,7 +47,7 @@ public abstract class ContactAccessor {
 
     /**
      * Create a hash map of what data needs to be populated in the Contact object
-     * @param fields the list of fields to populate
+     * @param options the list of fields to populate
      * @return the hash map of required data
      */
     protected HashMap<String, Boolean> buildPopulationSet(JSONObject options) {
@@ -145,7 +140,7 @@ public abstract class ContactAccessor {
 
     /**
      * Handles adding a JSON Contact object into the database.
-     * @return TODO
+     * @return the raw id of the contact if successfully saved, null otherwise
      */
     public abstract String save(JSONObject contact);
 
@@ -155,17 +150,16 @@ public abstract class ContactAccessor {
     public abstract JSONArray search(JSONArray filter, JSONObject options);
 
     /**
-     * Handles searching through SDK-specific contacts API.
+     * Handles searching through SDK-specific contacts API using contact id.
      * @throws JSONException
      */
     public abstract JSONObject getContactById(String id) throws JSONException;
 
     /**
-     * Handles searching through SDK-specific contacts API.
-     * @param desiredFields fields that will filled. All fields will be filled if null
+     * Handles searching through SDK-specific contacts API using raw id.
      * @throws JSONException
      */
-    public abstract JSONObject getContactById(String id, JSONArray desiredFields) throws JSONException;
+    public abstract JSONObject getContactByRawId(String rawId) throws JSONException;
 
     /**
      * Handles removing a contact from the database.
