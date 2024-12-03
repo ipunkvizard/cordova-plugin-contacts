@@ -323,15 +323,15 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         return getContactById(ContactsContract.Data.RAW_CONTACT_ID, rawId);
     }
 
-    private JSONObject getContactById(String idKey, String idValue) throws JSONException {
+    private JSONObject getContactById(String idColumnName, String id) throws JSONException {
         // passing null projection to retrieve all the columns from the DB
         //  in other words, to get all contact data
         Cursor c = mApp.getActivity().getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 null,
-                idKey + " = ? ",
-                new String[] { idValue },
-                idKey + " ASC"
+                idColumnName + " = ? ",
+                new String[] { id },
+                idColumnName + " ASC"
         );
         // passing null to populate all the contact's data
         HashMap<String, Boolean> populate = buildPopulationSet(
