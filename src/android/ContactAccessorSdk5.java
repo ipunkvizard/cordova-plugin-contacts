@@ -308,14 +308,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     @Override
     public JSONObject getContactById(String id) throws JSONException {
-        Cursor c = mApp.getActivity().getContentResolver().query(
-                ContactsContract.Data.CONTENT_URI,
-                null,
-                ContactsContract.Data.CONTACT_ID + " = ? ",
-                new String[] { id },
-                ContactsContract.Data.CONTACT_ID + " ASC"
-        );
-        return getContactById(c);
+        return getContactById(ContactsContract.Data.CONTACT_ID, id);
     }
 
     /**
@@ -327,17 +320,17 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     @Override
     public JSONObject getContactByRawId(String rawId) throws JSONException {
+        return getContactById(ContactsContract.Data.RAW_CONTACT_ID, rawId);
+    }
+
+    private JSONObject getContactById(String idKey, String idValue) throws JSONException {
         Cursor c = mApp.getActivity().getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 null,
-                ContactsContract.Data.RAW_CONTACT_ID + " = ? ",
-                new String[] { rawId },
-                ContactsContract.Data.RAW_CONTACT_ID + " ASC"
+                idKey + " = ? ",
+                new String[] { idValue },
+                idKey + " ASC"
         );
-        return getContactById(c);
-    }
-
-    private JSONObject getContactById(Cursor c) throws JSONException {
         HashMap<String, Boolean> populate = buildPopulationSet(
                 new JSONObject().put("desiredFields", null)
         );
