@@ -47,7 +47,7 @@ public abstract class ContactAccessor {
 
     /**
      * Create a hash map of what data needs to be populated in the Contact object
-     * @param options the list of fields to populate
+     * @param options the list of fields to populate, or null/empty if you want all data
      * @return the hash map of required data
      */
     protected HashMap<String, Boolean> buildPopulationSet(JSONObject options) {

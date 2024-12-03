@@ -324,6 +324,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
     }
 
     private JSONObject getContactById(String idKey, String idValue) throws JSONException {
+        // passing null projection to retrieve all the columns from the DB
+        //  in other words, to get all contact data
         Cursor c = mApp.getActivity().getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 null,
@@ -331,6 +333,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
                 new String[] { idValue },
                 idKey + " ASC"
         );
+        // passing null to populate all the contact's data
         HashMap<String, Boolean> populate = buildPopulationSet(
                 new JSONObject().put("desiredFields", null)
         );
