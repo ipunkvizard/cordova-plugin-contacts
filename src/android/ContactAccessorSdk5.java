@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.Date;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -308,7 +309,9 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     @Override
     public JSONObject getContactById(String id) throws JSONException {
-        return getContactById(ContactsContract.Data.CONTACT_ID, id);
+        return getContactById(
+                new AbstractMap.SimpleEntry<>(ContactsContract.Data.CONTACT_ID, id)
+        );
     }
 
     /**
@@ -320,18 +323,20 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      */
     @Override
     public JSONObject getContactByRawId(String rawId) throws JSONException {
-        return getContactById(ContactsContract.Data.RAW_CONTACT_ID, rawId);
+        return getContactById(
+                new AbstractMap.SimpleEntry<>(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+        );
     }
 
-    private JSONObject getContactById(String idColumnName, String id) throws JSONException {
+    private JSONObject getContactById(Map.Entry<String, String> idColumn) throws JSONException {
         // passing null projection to retrieve all the columns from the DB
         //  in other words, to get all contact data
         Cursor c = mApp.getActivity().getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 null,
-                idColumnName + " = ? ",
-                new String[] { id },
-                idColumnName + " ASC"
+                idColumn.getKey() + " = ? ",
+                new String[] { idColumn.getValue() },
+                idColumn.getKey() + " ASC"
         );
         // passing null to populate all the contact's data
         HashMap<String, Boolean> populate = buildPopulationSet(
