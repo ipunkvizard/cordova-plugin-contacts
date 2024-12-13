@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-contacts",
-  "version": "3.0.1-OS6",
+  "version": "3.0.1-OS7",
   "description": "Cordova Contacts Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
