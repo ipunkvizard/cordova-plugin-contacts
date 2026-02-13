@@ -1,0 +1,11 @@
+{
+    "plugin": {
+        "url": "https://github.com/OutSystems/cordova-plugin-contacts#2.2.1-OS1",
+        "variables": [
+            {
+                "name": "CONTACTS_USAGE_DESCRIPTION",
+                "value": "We access your contacts to create or search them."
+            }
+        ]
+    }
+}

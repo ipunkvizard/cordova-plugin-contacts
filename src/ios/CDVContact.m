@@ -984,7 +984,9 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
 
     if ([self.returnFields valueForKey:kW3ContactNote]) {
         // note
-        value = (__bridge_transfer NSString*)ABRecordCopyValue(self.record, kABPersonNoteProperty);
+        value = [UIDevice currentDevice].systemVersion.floatValue < 13 ?
+                (__bridge_transfer NSString*)ABRecordCopyValue(self.record, kABPersonNoteProperty) :
+                nil;
         [nc setObject:(value != nil) ? value:[NSNull null] forKey:kW3ContactNote];
     }
 
@@ -1520,7 +1522,7 @@ static NSDictionary* org_apache_cordova_contacts_defaultFields = nil;
             }
         }
     }
-    if (!bFound && [searchFields valueForKey:kW3ContactNote]) {
+    if (!bFound && [searchFields valueForKey:kW3ContactNote] && [UIDevice currentDevice].systemVersion.floatValue < 13) {
         bFound = [self testStringValue:testValue forW3CProperty:kW3ContactNote];
     }
 

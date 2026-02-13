@@ -19,29 +19,6 @@
 
 package org.apache.cordova.contacts;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.lang.IllegalArgumentException;
-
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.LOG;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentProviderOperation;
@@ -55,15 +32,38 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.provider.ContactsContract.CommonDataKinds.Organization;
-import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.Organization;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
-import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Base64InputStream;
+
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.LOG;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.sql.Date;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * An implementation of {@link ContactAccessor} that uses current Contacts API.
  * This class should be used on Eclair or beyond, but would not work on any earlier
@@ -307,24 +307,41 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @return     a JSONObject representing the contact
      * @throws JSONException
      */
+    @Override
     public JSONObject getContactById(String id) throws JSONException {
-        // Call overloaded version with no desiredFields
-        return getContactById(id, null);
+        return getContactById(
+                new AbstractMap.SimpleEntry<>(ContactsContract.Data.CONTACT_ID, id)
+        );
     }
 
+    /**
+     * A special search that finds one contact by its raw id
+     *
+     * @param rawId   contact to find by raw id
+     * @return     a JSONObject representing the contact
+     * @throws JSONException
+     */
     @Override
-    public JSONObject getContactById(String id, JSONArray desiredFields) throws JSONException {
-        // Do the id query
+    public JSONObject getContactByRawId(String rawId) throws JSONException {
+        return getContactById(
+                new AbstractMap.SimpleEntry<>(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+        );
+    }
+
+    private JSONObject getContactById(Map.Entry<String, String> idColumn) throws JSONException {
+        // passing null projection to retrieve all the columns from the DB
+        //  in other words, to get all contact data
         Cursor c = mApp.getActivity().getContentResolver().query(
                 ContactsContract.Data.CONTENT_URI,
                 null,
-                ContactsContract.Data.RAW_CONTACT_ID + " = ? ",
-                new String[] { id },
-                ContactsContract.Data.RAW_CONTACT_ID + " ASC");
-
+                idColumn.getKey() + " = ? ",
+                new String[] { idColumn.getValue() },
+                idColumn.getKey() + " ASC"
+        );
+        // passing null to populate all the contact's data
         HashMap<String, Boolean> populate = buildPopulationSet(
-                new JSONObject().put("desiredFields", desiredFields)
-                );
+                new JSONObject().put("desiredFields", null)
+        );
 
         JSONArray contacts = populateContactArray(1, populate, c);
 
@@ -348,7 +365,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * @return             a JSONArray of contacts
      */
     private JSONArray populateContactArray(int limit,
-            HashMap<String, Boolean> populate, Cursor c) {
+                                           HashMap<String, Boolean> populate, Cursor c) {
 
         String contactId = "";
         String rawId = "";
@@ -1022,7 +1039,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * This method will save a contact object into the devices contacts database.
      *
      * @param contact the contact to be saved.
-     * @returns the id if the contact is successfully saved, null otherwise.
+     * @returns the raw id if the contact is successfully saved, null otherwise.
      */
     public String save(JSONObject contact) {
         AccountManager mgr = AccountManager.get(mApp.getActivity());

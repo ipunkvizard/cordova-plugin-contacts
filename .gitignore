@@ -12,12 +12,9 @@ Thumbs.db
 *.swp
 *.user
 
-node_modules
-
-
-
-
-
-
-
- 
+node_modules/
+allure-results/
+os-appium-tests/allure-results/
+os-appium-tests/dist/
+*.zip
+*.tar

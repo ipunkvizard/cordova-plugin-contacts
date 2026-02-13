@@ -1,0 +1,17 @@
+{
+    "moduleName": "ContactsPlugin",
+    "applicationNames": [
+        "ContactsPlugin",
+        "ContactsSampleApp"
+    ],
+    "testPipelineArgs": {
+        "plugin": "contacts",
+        "threads": "3"
+    },
+    "sauceLabsInfo": {
+        "ContactsSampleApp": {
+            "androidAPIKey": "83988D69323A4660B364B94CD054A7E0",
+            "iosAPIKey": "83988D69323A4660B364B94CD054A7E0"
+        }
+    }
+}

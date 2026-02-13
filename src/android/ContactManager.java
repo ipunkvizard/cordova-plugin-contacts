@@ -90,6 +90,10 @@ public class ContactManager extends CordovaPlugin {
     }
 
 
+    private void getReadWritePermission(int requestCode){
+        PermissionHelper.requestPermissions(this, requestCode, new String[]{READ,WRITE});
+    }
+
     /**
      * Executes the request and returns PluginResult.
      *
@@ -130,23 +134,23 @@ public class ContactManager extends CordovaPlugin {
             }
         }
         else if (action.equals("save")) {
-            if(PermissionHelper.hasPermission(this, WRITE))
+            if(PermissionHelper.hasPermission(this, WRITE) && PermissionHelper.hasPermission(this, READ))
             {
                 save(executeArgs);
             }
             else
             {
-                getWritePermission(SAVE_REQ_CODE);
+                getReadWritePermission(SAVE_REQ_CODE);
             }
         }
         else if (action.equals("remove")) {
-            if(PermissionHelper.hasPermission(this, WRITE))
+            if(PermissionHelper.hasPermission(this, WRITE) && PermissionHelper.hasPermission(this, READ))
             {
                 remove(executeArgs);
             }
             else
             {
-                getWritePermission(REMOVE_REQ_CODE);
+                getReadWritePermission(REMOVE_REQ_CODE);
             }
         }
         else if (action.equals("pickContact")) {
@@ -186,7 +190,7 @@ public class ContactManager extends CordovaPlugin {
                 String id = contactAccessor.save(contact);
                 if (id != null) {
                     try {
-                        res = contactAccessor.getContactById(id);
+                        res = contactAccessor.getContactByRawId(id);
                     } catch (JSONException e) {
                         LOG.e(LOG_TAG, "JSON fail.", e);
                     }
@@ -239,19 +243,8 @@ public class ContactManager extends CordovaPlugin {
         if (requestCode == CONTACT_PICKER_RESULT) {
             if (resultCode == Activity.RESULT_OK) {
                 String contactId = intent.getData().getLastPathSegment();
-                // to populate contact data we require  Raw Contact ID
-                // so we do look up for contact raw id first
-                Cursor c =  this.cordova.getActivity().getContentResolver().query(RawContacts.CONTENT_URI,
-                            new String[] {RawContacts._ID}, RawContacts.CONTACT_ID + " = " + contactId, null, null);
-                if (!c.moveToFirst()) {
-                    this.callbackContext.error("Error occured while retrieving contact raw id");
-                    return;
-                }
-                String id = c.getString(c.getColumnIndex(RawContacts._ID));
-                c.close();
-
                 try {
-                    JSONObject contact = contactAccessor.getContactById(id);
+                    JSONObject contact = contactAccessor.getContactById(contactId);
                     this.callbackContext.success(contact);
                     return;
                 } catch (JSONException e) {

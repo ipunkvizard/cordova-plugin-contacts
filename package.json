@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-contacts",
-  "version": "3.0.2-dev",
+  "version": "3.0.1-OS7",
   "description": "Cordova Contacts Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
@@ -57,5 +57,8 @@
   },
   "devDependencies": {
     "jshint": "^2.6.0"
+  },
+  "dependencies": {
+    "adb": "^0.2.0"
   }
 }
