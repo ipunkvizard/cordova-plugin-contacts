@@ -40,7 +40,7 @@ import Cordova
 @objc(CDVContacts)
 class CDVContacts: CDVPlugin {
 
-    private let store = CNContactStore()
+    let store = CNContactStore()
 
     // MARK: - New Contact GUI  (iOS-specific, not W3C)
 
@@ -86,8 +86,9 @@ class CDVContacts: CDVPlugin {
                 let contact = try self.store.unifiedContact(withIdentifier: recordId,
                                                             keysToFetch: keysToFetch)
                 DispatchQueue.main.async {
-                    let vc = CDVDisplayContactViewController(for: contact, store: self.store)
-                    vc.allowsEditing = allowsEditing
+                    let vc = CDVDisplayContactViewController(for: contact)
+                    vc.contactStore = self.store
+                    vc.allowsEditing = false
                     vc.cdvPlugin = self
 
                     let parent = UIViewController()
@@ -364,7 +365,7 @@ class CDVContactsPicker: CNContactPickerViewController, CNContactPickerDelegate 
     // CNContactPickerDelegate — user cancelled
     func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
         let result = CDVPluginResult(status: .error, messageAs: CDVContactError.operationCancelledError.rawValue)
-        cdvPlugin?.commandDelegate.send(result, callbackId: cdvCallbackId)
+        cdvPlugin?.commandDelegate.send(result, callbackId: cdvCallbackId!)
     }
 
     // CNContactPickerDelegate — user selected a contact
@@ -415,7 +416,7 @@ class CDVNewContactViewController: CNContactViewController, CNContactViewControl
             } else {
                 result = CDVPluginResult(status: .ok, messageAs: -1)
             }
-            self.cdvPlugin?.commandDelegate.send(result, callbackId: self.cdvCallbackId)
+            self.cdvPlugin?.commandDelegate.send(result, callbackId: self.cdvCallbackId!)
         }
     }
 }

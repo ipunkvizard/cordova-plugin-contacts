@@ -472,7 +472,7 @@ let kW3ContactUrls            = "urls"
         // Fallback displayName from formatter
         if fields[kW3ContactDisplayName] != nil, nc[kW3ContactDisplayName] is NSNull {
             let formatted = CNContactFormatter.string(from: contact, style: .fullName)
-            nc[kW3ContactDisplayName] = formatted ?? contact.nickname.isEmpty ? "" : contact.nickname
+            nc[kW3ContactDisplayName] = formatted ?? (contact.nickname.isEmpty ? "" : contact.nickname)
         }
 
         if let phones = extractMultiValueStrings(kW3ContactPhoneNumbers) {
