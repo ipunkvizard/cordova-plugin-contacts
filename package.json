@@ -1,10 +1,10 @@
 {
-  "name": "cordova-plugin-contacts",
-  "version": "3.0.2-dev",
+  "name": "cordova-plugin-contacts-patch",
+  "version": "4.0.0",
   "description": "Cordova Contacts Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
-    "id": "cordova-plugin-contacts",
+    "id": "cordova-plugin-contacts-patch",
     "platforms": [
       "android",
       "amazon-fireos",
