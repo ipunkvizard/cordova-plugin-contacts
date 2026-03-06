@@ -16,6 +16,13 @@
   KIND, either express or implied.  See the License for the
   specific language governing permissions and limitations
   under the License.
+
+  MIGRATION NOTES (plugin.xml):
+  - Removed AddressBook.framework and AddressBookUI.framework (deprecated in iOS 9+)
+  - Added Contacts.framework and ContactsUI.framework (modern replacements)
+  - Replaced CDVContacts.h / CDVContacts.m and CDVContact.h / CDVContact.m
+    with CDVContacts.swift and CDVContact.swift
+  - Removed <header-file> entries (not needed for Swift source files)
 -->
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
@@ -142,13 +149,23 @@
             <merges target="Contact" />
         </js-module>
 
-        <header-file src="src/ios/CDVContacts.h" />
-        <source-file src="src/ios/CDVContacts.m" />
-        <header-file src="src/ios/CDVContact.h" />
-        <source-file src="src/ios/CDVContact.m" />
+        <!--
+            Swift source files replace the deprecated ObjC pair:
+              CDVContact.h  / CDVContact.m   → CDVContact.swift
+              CDVContacts.h / CDVContacts.m  → CDVContacts.swift
 
-        <framework src="AddressBook.framework" weak="true" />
-        <framework src="AddressBookUI.framework" weak="true" />
+            No <header-file> entries are needed for Swift.
+        -->
+        <source-file src="src/ios/CDVContact.swift" />
+        <source-file src="src/ios/CDVContacts.swift" />
+
+        <!--
+            Contacts.framework and ContactsUI.framework replace the
+            deprecated AddressBook.framework and AddressBookUI.framework.
+            Both are available from iOS 9+.
+        -->
+        <framework src="Contacts.framework" />
+        <framework src="ContactsUI.framework" />
         <framework src="CoreGraphics.framework" />
     </platform>
 
@@ -182,7 +199,6 @@
         <dependency id="cordova-plugin-bb-contacts" />
         <dependency id="cordova-plugin-bb-pimlib" />
     </platform>
-
 
     <!-- wp8 -->
     <platform name="wp8">
